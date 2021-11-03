@@ -84,3 +84,4 @@ gen
 *.mat
 *.png
 __pycache__/
+test.py
