@@ -85,3 +85,7 @@ gen
 *.png
 __pycache__/
 test.py
+*.docx
+*.pdf
+*.zip
+*.pkl

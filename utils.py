@@ -1,5 +1,5 @@
 # coding by kangan
-# 10.29
+# 11.7
 
 import numpy as np
 
@@ -49,7 +49,6 @@ def im2col(input_data, filter_h, filter_w, stride, pad):
 
     col = np.transpose(col, (0, 4, 5, 1, 2, 3))
     col = col.reshape((N*out_h*out_w, -1))
-    #col = col.transpose(0, 4, 5, 1, 2, 3).reshape(N*out_h*out_w, -1)
     return col
 
 def col2im(col, input_shape, filter_h, filter_w, stride, pad):

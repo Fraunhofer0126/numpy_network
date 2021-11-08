@@ -99,42 +99,40 @@ def loadMnist_conv():
     return x_train, label_train, x_test, label_test
 
 if __name__ == '__main__':
-    x_train, label_train, x_test, label_test = loadMnist_conv()
+    x_train, label_train, x_test, label_test = loadSVHN()
     print(x_train.shape, label_train.shape, x_test.shape, label_test.shape)
     model = Network('mse')
     batchSize = 100
-
-    # model.Sequential([
-    #     Dense(outputSize=256, optim = optim_momentum()),
-    #     Sigmoid(),
-    #     Dense(outputSize=128, optim = optim_momentum()),
-    #     Sigmoid(),
-    #     Dense(outputSize=64, optim = optim_momentum()),
-    #     Sigmoid(),
-    #     Dense(outputSize=10, optim = optim_momentum()),
-    #     Sigmoid()
-    # ])
+    #
+    model.Sequential([
+        Dense(outputSize=512, optim=optim_momentum()),
+        Sigmoid(),
+        Dense(outputSize=256, optim = optim_momentum()),
+        Sigmoid(),
+        Dense(outputSize=128, optim = optim_momentum()),
+        Sigmoid(),
+        Dense(outputSize=64, optim = optim_momentum()),
+        Sigmoid(),
+        Dense(outputSize=10, optim = optim_momentum()),
+        Sigmoid(),
+    ])
 
 
     # Conv: (ksize, pad, stride, channel, filters, optim)
     # Pooling: (pool_h, pool_w, stride=1, pad=0)
-    model.Sequential([
-        Conv(5, 0, 1, 1, 2, optim = optim_momentum()),
-        ReLU(),
-        Pooling(12, 12, 1, 0),
-        Conv(5, 0, 1, 2, 4, optim = optim_momentum()),
-        ReLU(),
-        Pooling(4, 4, 1, 0),
-        #Pooling(5, 5, 1, 0),
-        #Conv(5, 0, 1, 8, 16, optim=optim_momentum()),
-        #ReLU(),
-        Flatten(batchSize),
-        Dense(outputSize=128, optim=optim_momentum()),
-        ReLU(),
-        Dense(outputSize=64, optim = optim_momentum()),
-        ReLU(),
-        Dense(outputSize=10, optim=optim_momentum()),
-        ReLU()
-    ])
+    # model.Sequential([
+    #     Conv(5, 0, 1, 1, 2, optim = optim_momentum()),
+    #     Sigmoid(),
+    #     Pooling(12, 12, 1, 0),
+    #     Conv(5, 0, 1, 2, 4, optim = optim_momentum()),
+    #     Sigmoid(),
+    #     Flatten(batchSize),
+    #     Dense(outputSize=64, optim = optim_momentum()),
+    #     Sigmoid(),
+    #     Dense(outputSize=10, optim=optim_momentum()),
+    #     Sigmoid()
+    # ])
 
-    model.train(epochs=200, batchSize=batchSize, trainX=x_train, trainY=label_train, testX=x_test, testY=label_test)
+    model.train(epochs=200,batchSize=batchSize,trainX=x_train,trainY=label_train,testX=x_test,testY=label_test)
+    model.saveWeights("model.pkl")
+    model.test("model.pkl", x_test, label_test)

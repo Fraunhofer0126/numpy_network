@@ -1,11 +1,5 @@
 # coding by kangan
-# 10.29
-# to do
-# 1. assert
-# 2. Conv 正反向传播
-# 3. Average Pooling 正反向
-# 4.
-# 5.
+# 11.7
 
 import numpy as np
 from math import sqrt, ceil
@@ -54,9 +48,9 @@ class ReLU(Layer):
         self.input = x
         self.output = np.maximum(0, x)
         return self.output
+
     def bp(self, delta):
-        delta[delta <= 0] = 0
-        delta[delta > 0] = 1
+        delta[self.input < 0] = 0
         return delta
 
     def update(self):
@@ -108,7 +102,7 @@ class Conv(Layer):
         self.stride = stride
         self.Channel = channel
         # ka: filter shape:  (output_channel, input_channel, height, width) or (FN, C, FH, FW)
-        self.w = np.random.randn(filters, channel, ksize, ksize) * sqrt(6 / (ksize + ksize))
+        self.w = np.random.randn(filters, channel, ksize, ksize) * sqrt(6 /(filters*channel* (ksize + ksize)))
         self.bias = np.zeros(filters)
         self.input = None
         self.output = None
