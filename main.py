@@ -99,8 +99,7 @@ def loadMnist_conv():
     return x_train, label_train, x_test, label_test
 
 if __name__ == '__main__':
-    x_train, label_train, x_test, label_test = loadSVHN()
-    print(x_train.shape, label_train.shape, x_test.shape, label_test.shape)
+
     model = Network('mse')
     batchSize = 100
     #
@@ -133,6 +132,17 @@ if __name__ == '__main__':
     #     Sigmoid()
     # ])
 
-    model.train(epochs=200,batchSize=batchSize,trainX=x_train,trainY=label_train,testX=x_test,testY=label_test)
-    model.saveWeights("model.pkl")
-    model.test("model.pkl", x_test, label_test)
+
+    x_train, label_train, x_test, label_test = loadSVHN()
+    print(x_train.shape, label_train.shape, x_test.shape, label_test.shape)
+
+    # You can set do_you_want_to_train = False to skip Train and test directly!!
+
+    do_you_want_to_train = False
+
+    if do_you_want_to_train == True:
+        model.train(epochs=200,batchSize=batchSize,trainX=x_train,trainY=label_train,testX=x_test,testY=label_test,modelname = "model.pkl")
+        model.saveWeights("model_final.pkl")
+
+    # test!
+    model.test("model_final.pkl", x_test, label_test)

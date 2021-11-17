@@ -58,8 +58,9 @@ class Network:
                 wList.append(None)
         with open(modelname, 'wb') as f:  # 将数据写入pkl文件
             pickle.dump(wList, f)
+            print("Model has been saved to: ", modelname)
 
-    def train(self, epochs, batchSize, trainX, trainY, testX, testY):
+    def train(self, epochs, batchSize, trainX, trainY, testX, testY, modelname):
         print("Start Training!")
 
         if trainX.ndim == 4:
@@ -113,12 +114,18 @@ class Network:
             print(">>epoch {}: train_loss = {:.4f}, train_acc = {:.4f}, test_loss = {:.4f}, test_acc = {:.4f}".format(
                 epoch, train_loss, train_acc, test_loss, test_acc))
 
+            if epoch >= 10 and epoch % 10 == 0:
+                self.saveWeights(modelname = modelname)
+
         self.show(epochs)
 
     def test(self, weightName, testX, testY):
         with open(weightName, 'rb') as f:  # 读取pkl文件数据
             wList = pickle.load(f)
+            print("Loaded the model: ", weightName)
         for index in range(len(self.layerList)):
+            if hasattr(self.layerList[index], 'initw'):
+                self.layerList[index].initw = True
             self.layerList[index].w = wList[index]
 
         testSize = testX.shape[0]
