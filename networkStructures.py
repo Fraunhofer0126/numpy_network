@@ -6,6 +6,7 @@ from math import sqrt, ceil
 from abc import ABC, abstractmethod
 from utils import col2im, im2col
 
+
 class Layer(ABC):
     @abstractmethod
     def __init__(self):
@@ -27,6 +28,7 @@ class Sigmoid(Layer):
     def __init__(self):
         self.input = None
         self.output = None
+        self.name = 'sigmoid'
 
     def forward(self, x):
         self.input = x
@@ -43,6 +45,7 @@ class ReLU(Layer):
     def __init__(self):
         self.input = None
         self.output = None
+        self.name = 'relu'
 
     def forward(self, x):
         self.input = x
@@ -70,6 +73,7 @@ class Dense(Layer):
         self.gradbias = None
         self.optimizer = optim
         self.initw = False
+        self.name = 'dense'
 
     def forward(self, x):
         # ka: You don't need to Enter the 'inputSize' in __init__() :)

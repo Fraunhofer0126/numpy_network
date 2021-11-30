@@ -5,10 +5,12 @@ import numpy as np
 from math import sqrt, ceil
 from utils import accuracy, cost_func
 import matplotlib.pyplot as plt
+from networkStructures import *
 
 class Network:
     def __init__(self, cost_func_name):
         self.layerList = []
+        self.cost_func_name = cost_func_name
         self.cost_func = cost_func(cost_func_name)
         self.train_loss = []
         self.train_acc = []
@@ -49,16 +51,69 @@ class Network:
         plt.ylabel('accuracy')
         plt.show()
 
-    def saveWeights(self, modelname):
+    def saveModels(self, modelname):
+        model_info_dict = {}
         wList = []
+        layerList = []
+        optimList = []
+        outputSizeList = []
         for layer in self.layerList:
             if hasattr(layer, 'w'):
                 wList.append(layer.w)
             else:
                 wList.append(None)
+
+            layerList.append(layer.name)
+
+            if hasattr(layer, 'outputSize'):
+                outputSizeList.append(layer.outputSize)
+            else:
+                outputSizeList.append(None)
+
+            if hasattr(layer, 'optimizer'):
+                optimList.append(layer.optimizer.name)
+            else:
+                optimList.append(None)
+
+
+
+        model_info_dict['wList'] = wList
+        model_info_dict['layerList'] = layerList
+        model_info_dict['optimList'] = optimList
+        model_info_dict['outputSizeList'] = outputSizeList
+        model_info_dict['cost_func_name'] = self.cost_func_name
+
         with open(modelname, 'wb') as f:  # 将数据写入pkl文件
-            pickle.dump(wList, f)
+            pickle.dump(model_info_dict, f)
             print("Model has been saved to: ", modelname)
+
+    def loadModels(self, modelname):
+        with open(modelname, 'rb') as f:  # 读取pkl文件数据
+            model_info_dict = pickle.load(f)
+            print("Loaded the model: ", modelname)
+
+        wList = model_info_dict['wList']
+        layerList = model_info_dict['layerList']
+        optimList = model_info_dict['optimList']
+        outputSizeList = model_info_dict['outputSizeList']
+        cost_func_name = model_info_dict['cost_func_name']
+
+        self.layerList = []
+        for index in range(len(layerList)):
+            if layerList[index] == 'relu':
+                self.layerList.append(ReLU())
+            elif layerList[index] == 'sigmoid':
+                self.layerList.append(Sigmoid())
+            elif layerList[index] == 'dense':
+                self.layerList.append(Dense(outputSize=outputSizeList[index], optim=optimList[index]))
+
+        for index in range(len(self.layerList)):
+            if hasattr(self.layerList[index], 'initw'):
+                self.layerList[index].initw = True
+            self.layerList[index].w = wList[index]
+            self.layerList[index].optimizer = optimList[index]
+        self.cost_func_name = cost_func_name
+
 
     def train(self, epochs, batchSize, trainX, trainY, testX, testY, modelname):
         print("Start Training!")
@@ -115,18 +170,12 @@ class Network:
                 epoch, train_loss, train_acc, test_loss, test_acc))
 
             if epoch >= 10 and epoch % 10 == 0:
-                self.saveWeights(modelname = modelname)
+                self.saveModels(modelname = modelname)
 
         self.show(epochs)
 
-    def test(self, weightName, testX, testY):
-        with open(weightName, 'rb') as f:  # 读取pkl文件数据
-            wList = pickle.load(f)
-            print("Loaded the model: ", weightName)
-        for index in range(len(self.layerList)):
-            if hasattr(self.layerList[index], 'initw'):
-                self.layerList[index].initw = True
-            self.layerList[index].w = wList[index]
+    def test(self, modelname, testX, testY):
+        self.loadModels(modelname)
 
         testSize = testX.shape[0]
 

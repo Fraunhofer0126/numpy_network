@@ -25,6 +25,8 @@ class optim_momentum:
         self.v_weight = np.zeros(1)
         self.v_bias = np.zeros(1)
         self.learning_rate = learning_rate
+        self.name = "momentum"
+
     def __call__(self, grad, weight=True):
         if weight:
             self.v_weight = self.eps * self.v_weight - self.learning_rate * grad
@@ -32,6 +34,29 @@ class optim_momentum:
         else:
             self.v_bias = self.eps * self.v_bias - self.learning_rate * grad
             return self.v_bias
+
+class RMSprop:
+    def __init__(self, learning_rate=0.001, decay_rate=0.9):
+        self.learning_rate = learning_rate
+        self.decay_rate = decay_rate
+        self.v_weight = None
+        self.v_bias = None
+        self.name = "momentum"
+
+    def __call__(self, grads, weight=True):
+        if weight:
+            if self.v_weight is None:
+                self.v_weight = np.zeros_like(grads)
+            self.v_weight *= self.decay_rate
+            self.v_weight += (1 - self.decay_rate) * grads**2
+            return self.learning_rate * grads / (np.sqrt(self.v_weight) + 1e-6)
+        else:
+            if self.v_bias is None:
+                self.v_bias = np.zeros_like(grads)
+            self.v_bias *= self.decay_rate
+            self.v_bias += (1 - self.decay_rate) * grads**2
+            return self.learning_rate * grads / (np.sqrt(self.v_bias) + 1e-6)
+
 
 def im2col(input_data, filter_h, filter_w, stride, pad):
     N, C, H, W = input_data.shape

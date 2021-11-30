@@ -3,7 +3,7 @@
 
 import numpy as np
 from math import sqrt, ceil
-from utils import accuracy, cost_func, optim_momentum
+from utils import accuracy, cost_func, optim_momentum, RMSprop
 from scipy.io import loadmat
 from network import Network
 from networkStructures import Dense, Sigmoid, Conv, Pooling, Flatten, ReLU
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     batchSize = 100
     #
     model.Sequential([
-        Dense(outputSize=512, optim=optim_momentum()),
+        Dense(outputSize=512, optim = optim_momentum()),
         Sigmoid(),
         Dense(outputSize=256, optim = optim_momentum()),
         Sigmoid(),
@@ -133,16 +133,16 @@ if __name__ == '__main__':
     # ])
 
 
-    x_train, label_train, x_test, label_test = loadSVHN()
+    x_train, label_train, x_test, label_test = loadMnist()
     print(x_train.shape, label_train.shape, x_test.shape, label_test.shape)
 
     # You can set do_you_want_to_train = False to skip Train and test directly!!
 
-    do_you_want_to_train = False
+    do_you_want_to_train = True
 
     if do_you_want_to_train == True:
-        model.train(epochs=200,batchSize=batchSize,trainX=x_train,trainY=label_train,testX=x_test,testY=label_test,modelname = "model.pkl")
-        model.saveWeights("model_final.pkl")
+        model.train(epochs=10,batchSize=batchSize,trainX=x_train,trainY=label_train,testX=x_test,testY=label_test,modelname = "model.pkl")
+        model.saveModels("model_final.pkl")
 
     # test!
     model.test("model_final.pkl", x_test, label_test)
